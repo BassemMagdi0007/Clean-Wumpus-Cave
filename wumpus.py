@@ -61,6 +61,7 @@ def find_mapElements(_map):
                 agent.append(col_index)
 
     indices.append(tuple(agent))
+    #print("indices: ", indices)
     #print(indices)
     return (indices, agent)
 
@@ -187,37 +188,46 @@ def findPlan(emptySquares, agent):
         for square in emptySquares:
             if tuple(square) not in visited:
                 while tuple(agent) != tuple(square):
+                    #current_position = tuple(agent)
+                   
                     if agent[0] < square[0]:
                         new_agent = goSouth(list(agent).copy())
-                        if new_agent == agent:
-                            break  # Hit the wall, stay in the same position
+                        if tuple(new_agent) not in emptySquares:
+                            new_agent = agent  # Hit the wall, stay in the same position
+                        else:
+                            plan.append('S')
                         agent = tuple(new_agent)
-                        plan.append('S')
+                   
                     elif agent[0] > square[0]:
                         new_agent = goNorth(list(agent).copy())
-                        if new_agent == agent:
-                            break  # Hit the wall, stay in the same position
+                        if tuple(new_agent) not in emptySquares:
+                            new_agent = agent  # Hit the wall, stay in the same position
+                            #if tuple(agent) == current_position:
+
+                        else:
+                            plan.append('N')
                         agent = tuple(new_agent)
-                        plan.append('N')
 
                     if agent[1] < square[1]:
                         new_agent = goEast(list(agent).copy())
-                        if new_agent == agent:
-                            break  # Hit the wall, stay in the same position
+                        if tuple(new_agent) not in emptySquares:
+                            new_agent = agent  # Hit the wall, stay in the same position
+                        else: 
+                            plan.append('E')
                         agent = tuple(new_agent)
-                        plan.append('E')
+                    
                     elif agent[1] > square[1]:
                         new_agent = goWest(list(agent).copy())
-                        if new_agent == agent:
-                            break  # Hit the wall, stay in the same position
+                        if tuple(new_agent) not in emptySquares:
+                            new_agent = agent  # Hit the wall, stay in the same position
+                        else:
+                            plan.append('W')
                         agent = tuple(new_agent)
-                        plan.append('W')
 
                 dfs(square)
 
     dfs(agent)
     return plan
-
 #__________________________________________________________________________________________________________________
 #__MAIN__
 
@@ -232,14 +242,14 @@ for file in os.listdir(directory):
     X = l[1]
     YZ = l[2]
 
-    if X != 'd': #or YZ != '01.txt':
-        continue
+    #if X != 'd': #or YZ != '01.txt':
+        #continue
     ##if X != 'd':
         ##continue
     #if X == 'a' or X == 'b' or X == 'c':
         #break
-    ##elif X == 'd' and YZ == '01.txt':
-    else:
+    if X == 'd' and YZ == '05.txt':
+    #else:
         #print("printed")
         with open(workingFolder + '\\' + filename, 'r') as file2:
             # Read the first line
@@ -275,6 +285,7 @@ for file in os.listdir(directory):
 
                 cave = _map[1:]
                 emptySquares, agent = find_mapElements(cave)
+                print("emptySquares: ", emptySquares)
                 solution = findPlan(emptySquares.copy(), agent.copy())
                 find_solution_with_S(solution)
                 # print("Solution:", solution)
