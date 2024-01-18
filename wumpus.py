@@ -181,11 +181,17 @@ def checkPlanNoS(emptySquares):
 #__________________________________________________________________________________________________________________
 def findPlan(emptySquares, agent):
     visited = set()
+    naughty_squares = []
     plan = []
+    initial_agent = agent
 
     def dfs(agent):
         visited.add(tuple(agent))
-        for square in emptySquares:
+        print("\nvisited: \n", visited)
+        for square in emptySquares[:-1]:
+            print("Target Square: ",square)
+            print("Empty Squares: ",emptySquares)
+            reached = 0
             if tuple(square) not in visited:
                 while tuple(agent) != tuple(square):
                     #current_position = tuple(agent)
@@ -193,38 +199,88 @@ def findPlan(emptySquares, agent):
                     if agent[0] < square[0]:
                         new_agent = goSouth(list(agent).copy())
                         if tuple(new_agent) not in emptySquares:
-                            new_agent = agent  # Hit the wall, stay in the same position
+                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
+                            # emptySquares.replace(square)
+                            
+                            # Find the index of the old value
+                            index_to_replace = emptySquares.index(square)
+                            # Replace the old value with the new value
+                            emptySquares[index_to_replace] = tuple(initial_agent)
+
+                            naughty_squares.append(square)
+                            break
                         else:
                             plan.append('S')
-                        agent = tuple(new_agent)
+                            print(plan)
+                            agent = tuple(new_agent)
+                            reached = 1
+                            print("Agent TTTT South: ", agent)
                    
                     elif agent[0] > square[0]:
                         new_agent = goNorth(list(agent).copy())
                         if tuple(new_agent) not in emptySquares:
-                            new_agent = agent  # Hit the wall, stay in the same position
-                            #if tuple(agent) == current_position:
-
+                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
+                            # emptySquares.replace(square)
+                            
+                            # Find the index of the old value
+                            index_to_replace = emptySquares.index(square)
+                            # Replace the old value with the new value
+                            emptySquares[index_to_replace] = tuple(initial_agent)
+                            naughty_squares.append(square)
+                            break
                         else:
                             plan.append('N')
-                        agent = tuple(new_agent)
+                            print(plan)
+                            agent = tuple(new_agent)
+                            reached = 1
+                            print("Agent TTTT North: ", agent)
 
                     if agent[1] < square[1]:
                         new_agent = goEast(list(agent).copy())
+                        print("square: ", square, "Agent: ", agent, "newAgent: ", new_agent)
                         if tuple(new_agent) not in emptySquares:
-                            new_agent = agent  # Hit the wall, stay in the same position
+                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
+                            print("Break", new_agent)
+                            # emptySquares.replace(square)
+                            
+                            # Find the index of the old value
+                            index_to_replace = emptySquares.index(square)
+                            # Replace the old value with the new value
+                            emptySquares[index_to_replace] = tuple(initial_agent)
+                            naughty_squares.append(square)
+                            break
                         else: 
                             plan.append('E')
-                        agent = tuple(new_agent)
+                            print(plan)
+                            agent = tuple(new_agent)
+                            reached = 1
+                            print("Agent TTTT East: ", agent)
                     
                     elif agent[1] > square[1]:
                         new_agent = goWest(list(agent).copy())
                         if tuple(new_agent) not in emptySquares:
-                            new_agent = agent  # Hit the wall, stay in the same position
+                            #new_agent = list(agent).copy()  # Hit the wall, stay in the same position
+                            # emptySquares.replace(square)
+                            
+                            # Find the index of the old value
+                            index_to_replace = emptySquares.index(square)
+                            # Replace the old value with the new value
+                            emptySquares[index_to_replace] = tuple(initial_agent)
+                            naughty_squares.append(square)
+                            break
                         else:
                             plan.append('W')
-                        agent = tuple(new_agent)
+                            print(plan)
+                            agent = tuple(new_agent)
+                            reached = 1
+                            print("Agent TTTT West: ", agent)
 
-                dfs(square)
+                if reached:
+                    print("calling square dfs")
+                    dfs(square)
+                else: 
+                    print("calling agent dfs")
+                    dfs(agent)
 
     dfs(agent)
     return plan
@@ -286,8 +342,10 @@ for file in os.listdir(directory):
                 cave = _map[1:]
                 emptySquares, agent = find_mapElements(cave)
                 print("emptySquares: ", emptySquares)
+                print("Agent: ", agent)
                 solution = findPlan(emptySquares.copy(), agent.copy())
                 find_solution_with_S(solution)
+                print(solution)
                 # print("Solution:", solution)
 
                 # Write the solution to a file
