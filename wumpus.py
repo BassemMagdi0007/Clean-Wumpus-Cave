@@ -1,10 +1,7 @@
 import os
-#workingFolder = "problems" 
-workingFolder = "example-problems" 
+workingFolder = "problems" 
 #directory = os.fsencode("problems")
 directory = os.fsencode(workingFolder)
-#__________________________________________________________________________________________________________________
-
 
 #__FUNCTIONS__ 
 
@@ -44,7 +41,6 @@ def goEast(agent):
         agent[1] = agent[1]+1 
     return agent 
 
-#__________________________________________________________________________________________________________________
 def find_mapElements(_map):
     indices = []
     agent = [] 
@@ -61,21 +57,22 @@ def find_mapElements(_map):
                 agent.append(col_index)
 
     indices.append(tuple(agent))
-    #print("indices: ", indices)
     #print(indices)
     return (indices, agent)
 
-#__________________________________________________________________________________________________________________
-def check_solution_with_S(myDict):
+def write_solution_with_S(myDict):
     valid = 1
     for item in myDict:
         if myDict[item] == 'open':   
-            valid = 0          
+            valid = 0        
+            print("NOT VALID")  
+            print("NOT VALID")  
             break
 
     with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
         if(valid):    
             print("GOOD PLAN")
+            print(" VALID")  
             f.write('GOOD PLAN')
         else:
             print("BAD PLAN")
@@ -88,8 +85,8 @@ def check_solution_with_S(myDict):
                     f.write(str(item[1]) + ", " + str(item[0]) + '\n')
 
     f.close()
-#__________________________________________________________________________________________________________________
-def check_solution_without_S(openElements):
+
+def write_solution_without_S(openElements):
 
     with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
         if(not openElements):    
@@ -104,21 +101,9 @@ def check_solution_without_S(openElements):
                 print(item[1],", ", item[0]) 
                 f.write(str(item[1]) + ", " + str(item[0]) + '\n')
 
-#__________________________________________________________________________________________________________________
-def find_solution_with_S(plan):
-    with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
-        if plan:
-            f.write(''.join(plan))
-        else:
-            f.write('BAD PLAN\n') 
 
-#__________________________________________________________________________________________________________________
-# 1) create dictionary and sets the initial value 'visited' and empty squares 'open'
-# 2) read the proposed answer and move the agent accordingly 
-# 3) check if the next coordinate is an empty square, if yes move the agent to it and mark it as 'visited'
-# 4) return the dictionary that has all the coordinates "check later in the main if all the dictionary is visited or not and decide GOOD/BAD plan accordingly" 
+
 def checkPlan(emptySquares, agent):
-
     newCoord = []
     
     # Create an empty dictionary to hold all the emptySquares and agent position
@@ -126,14 +111,9 @@ def checkPlan(emptySquares, agent):
     # Use a for loop to add the list to the dictionary with values set to 'open'
     for item in emptySquares:
         myDict[item] = 'open'
-    myDict[tuple(agent)] = 'visited'  #Check regression
+    myDict[tuple(agent)] = 'visited' 
     
-    #print("myDict Check: ",myDict)
-    
-    #newCoord = agent
-    #print("newCoord:" , newCoord)
     for char in proposedAns:
-        #print("agent before: ", agent)
         if char == 'N':
             newCoord = goNorth(agent.copy())
         if char == 'S':
@@ -144,175 +124,125 @@ def checkPlan(emptySquares, agent):
             newCoord = goWest(agent.copy())
 
         if tuple(newCoord) in emptySquares: 
-            #print("GGGG")
             agent = newCoord
             myDict[tuple(newCoord)] = 'visited'
-            print(myDict)
-    
-        #print("\nnewCoord: ", newCoord)
-        #print("\nagent after: ", agent)
-        #print(myDict)
+
     return(myDict)
 
-#__________________________________________________________________________________________________________________    
+    
 def checkPlanNoS(emptySquares):
     openElements = []
     for item in emptySquares[:-1]:
         agent = list(item) 
-        #print(agent, end=' ')
         dictNoS = checkPlan(emptySquares[:-1], agent)
         
         for item in dictNoS:
         # print missed squares 
             if dictNoS[item] == 'open': 
                 openElements.append(item)
-                
-        #print(dictNoS)
 
     unique_set = set(openElements)
     # Convert the set back to a list
     unique_list = list(unique_set)
-
-
-    #print("\nopenElements: ", unique_list)
-    #print(agent, end=' ')
     return(unique_list)
 
-#__________________________________________________________________________________________________________________
-def findPlan(emptySquares, agent):
-    visited = set()
-    naughty_squares = []
-    plan = []
-    initial_agent = agent
 
-    def dfs(agent):
-        visited.add(tuple(agent))
-        print("\nvisited: \n", visited)
-        for square in emptySquares[:-1]:
-            print("Target Square: ",square)
-            print("Empty Squares: ",emptySquares)
-            reached = 0
-            if tuple(square) not in visited:
-                while tuple(agent) != tuple(square):
-                    #current_position = tuple(agent)
-                   
-                    if agent[0] < square[0]:
-                        new_agent = goSouth(list(agent).copy())
-                        if tuple(new_agent) not in emptySquares:
-                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
-                            # emptySquares.replace(square)
-                            
-                            # Find the index of the old value
-                            index_to_replace = emptySquares.index(square)
-                            # Replace the old value with the new value
-                            emptySquares[index_to_replace] = tuple(initial_agent)
+def is_valid_move_dfs(maze, x, y, visited):
+    rows, cols = len(maze), len(maze[0])
+    return 0 <= x < rows and 0 <= y < cols and maze[x][y] != 'X' and (x, y) not in visited
 
-                            naughty_squares.append(square)
-                            break
-                        else:
-                            plan.append('S')
-                            print(plan)
-                            agent = tuple(new_agent)
-                            reached = 1
-                            print("Agent TTTT South: ", agent)
-                   
-                    elif agent[0] > square[0]:
-                        new_agent = goNorth(list(agent).copy())
-                        if tuple(new_agent) not in emptySquares:
-                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
-                            # emptySquares.replace(square)
-                            
-                            # Find the index of the old value
-                            index_to_replace = emptySquares.index(square)
-                            # Replace the old value with the new value
-                            emptySquares[index_to_replace] = tuple(initial_agent)
-                            naughty_squares.append(square)
-                            break
-                        else:
-                            plan.append('N')
-                            print(plan)
-                            agent = tuple(new_agent)
-                            reached = 1
-                            print("Agent TTTT North: ", agent)
+def get_direction(current, next_pos):
+    x_curr, y_curr = current
+    x_next, y_next = next_pos
 
-                    if agent[1] < square[1]:
-                        new_agent = goEast(list(agent).copy())
-                        print("square: ", square, "Agent: ", agent, "newAgent: ", new_agent)
-                        if tuple(new_agent) not in emptySquares:
-                           # new_agent = list(agent).copy()  # Hit the wall, stay in the same position
-                            print("Break", new_agent)
-                            # emptySquares.replace(square)
-                            
-                            # Find the index of the old value
-                            index_to_replace = emptySquares.index(square)
-                            # Replace the old value with the new value
-                            emptySquares[index_to_replace] = tuple(initial_agent)
-                            naughty_squares.append(square)
-                            break
-                        else: 
-                            plan.append('E')
-                            print(plan)
-                            agent = tuple(new_agent)
-                            reached = 1
-                            print("Agent TTTT East: ", agent)
-                    
-                    elif agent[1] > square[1]:
-                        new_agent = goWest(list(agent).copy())
-                        if tuple(new_agent) not in emptySquares:
-                            #new_agent = list(agent).copy()  # Hit the wall, stay in the same position
-                            # emptySquares.replace(square)
-                            
-                            # Find the index of the old value
-                            index_to_replace = emptySquares.index(square)
-                            # Replace the old value with the new value
-                            emptySquares[index_to_replace] = tuple(initial_agent)
-                            naughty_squares.append(square)
-                            break
-                        else:
-                            plan.append('W')
-                            print(plan)
-                            agent = tuple(new_agent)
-                            reached = 1
-                            print("Agent TTTT West: ", agent)
+    if x_next == x_curr + 1:
+        return 'N'
+    elif x_next == x_curr - 1:
+        return 'S'
+    elif y_next == y_curr + 1:
+        return 'W'
+    elif y_next == y_curr - 1:
+        return 'E'
 
-                if reached:
-                    print("calling square dfs")
-                    dfs(square)
-                else: 
-                    print("calling agent dfs")
-                    dfs(agent)
+def dfs(maze, current_position, goal, visited, path):
+    x, y = current_position
 
-    dfs(agent)
-    return plan
-#__________________________________________________________________________________________________________________
+    if current_position == goal:
+        path.append(current_position)
+        return True
+
+    visited.add(current_position)
+    
+    for neighbor in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+        if is_valid_move_dfs(maze, *neighbor, visited):
+            if dfs(maze, neighbor, goal, visited, path):
+                path.append(current_position)
+                return True
+
+    return False
+
+
+
+def find_solution_with_S(plan):
+    with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
+        if plan:
+            f.write(''.join(plan))
+        else:
+            f.write('BAD PLAN\n') 
+
+
+
+
+def find_path_dfs(maze, start):
+    empty_positions = [(i, j) for i in range(len(maze)) for j in range(len(maze[0])) if maze[i][j] == ' ']
+
+    visited_set = set()
+    path = []
+    all_paths_coordinates = []
+
+    for goal in empty_positions:
+        if not dfs(maze, start, goal, visited_set, path):
+            print("No path found to goal at", goal)
+            return
+
+        path_coordinates = [get_direction(path[i], path[i + 1]) for i in range(len(path) - 1)]
+        path_coordinates_str = ''.join(path_coordinates[::-1])
+
+        print("\nPath found to goal at", goal, "as coordinates:", path_coordinates_str)
+        print("Path found to goal at", goal, "as coordinates (full):", path[::-1])
+
+        # Write the solution to a file
+        find_solution_with_S(path_coordinates_str)
+
+        # Update start_position to the reached goal
+        start = goal
+
+        # Accumulate path coordinates
+        all_paths_coordinates.append(path_coordinates_str)
+        # Print all concatenated path coordinates at the end
+        print("\nAll paths coordinates:", ''.join(all_paths_coordinates))
+        find_solution_with_S(''.join(all_paths_coordinates))
+        # Clear visited set and path for the next iteration
+        visited_set.clear()
+        path.clear()
+
+
 #__MAIN__
 
 # Open the file for reading
-#problemFile = 'problems\problem_a_00.txt'
-#problemFile = 'example-problems\problem_a_04.txt'
-#with open(problemFile, 'r') as file:
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
     l = filename.split("_")
-    #print(filename, l)
     X = l[1]
     YZ = l[2]
 
-    #if X != 'd': #or YZ != '01.txt':
-        #continue
-    ##if X != 'd':
-        ##continue
-    #if X == 'a' or X == 'b' or X == 'c':
-        #break
-    if X == 'd' and YZ == '05.txt':
-    #else:
-        #print("printed")
+    if X == 'e' or X == 'f':
+        break
+    else:
         with open(workingFolder + '\\' + filename, 'r') as file2:
             # Read the first line
             line = file2.readlines()
             _map = [item.replace('\n', "") for item in line]
-            #print(_map)
-            #check type of question (Check plan or find plan)
             
             # Extract the first line (type of the problem)
             problemType = _map[0]
@@ -320,34 +250,21 @@ for file in os.listdir(directory):
             if problemType == "CHECK PLAN": 
                 # Extract the second line (solution of the problem)
                 proposedAns = _map[1]
-                #print(proposedAns)       
-                #print("Here")
                 cave = _map[2:]
-                #print(cave,'\n\n')
                 emptySquares, agent = find_mapElements(cave)
-                #print("emptySquares:", emptySquares)
-                #print("Agent Position:", agent)
                 if agent:  
                     finalDict = checkPlan(emptySquares.copy(), agent.copy())
-                    #print(finalDict)
-                    check_solution_with_S(finalDict)
+                    write_solution_with_S(finalDict)
                 else:
                     finalList = checkPlanNoS(emptySquares.copy())
-                    check_solution_without_S(finalList)
+                    write_solution_without_S(finalList)
                     
                 
-            if problemType == "FIND PLAN":
-                print("Find")
-
-                cave = _map[1:]
-                emptySquares, agent = find_mapElements(cave)
-                print("emptySquares: ", emptySquares)
-                print("Agent: ", agent)
-                solution = findPlan(emptySquares.copy(), agent.copy())
-                find_solution_with_S(solution)
-                print(solution)
-                # print("Solution:", solution)
-
-                # Write the solution to a file
-                
-                        
+            if problemType == "FIND PLAN": 
+                sample_maze = _map[1:]
+                _ , agent = find_mapElements(sample_maze)
+                path_dfs = find_path_dfs(sample_maze, tuple(agent))
+                #print("Find")
+          
+                # findPlan()
+            
