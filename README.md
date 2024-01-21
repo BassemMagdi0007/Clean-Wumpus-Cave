@@ -1,6 +1,6 @@
 # Assignment 1.0: Wumpus-Cave Variant A
 
-This repository contains a Python implementation that serves as a solver for the Wumpus World problem, involving a grid-based environment where an agent (vacuum cleaner) needs to navigate, following a sequence of instructions, to clean the entire area. The code provides a detailed solution, including tracking the agent's movement and validating the cleaning plan.
+This repository contains a Python implementation that serves as a solver for the Wumpus World problem, involving a grid-based environment where an agent (vacuum cleaner) needs to navigate, following a sequence of instructions, to clean the entire area or generate a sequence of directions to clean the entire erea. The code provides a detailed solution, including tracking the agent's movement and validating the cleaning plan.
 
 
 
@@ -16,7 +16,7 @@ This repository contains a Python implementation that serves as a solver for the
 - [Self Evaluation and Design Decisions](#design-decision)
 
 ## Introduction
-In the realm of Wumpus World, an agent, akin to a virtual explorer, must traverse through a grid. The "CHECK PLAN" problem type involves scrutinizing whether a proposed sequence of movements and actions ensures the agent's successful coverage of the entire area, factoring in its initial position.
+In the realm of Wumpus World, an agent, akin to a virtual explorer, must traverse through a grid. This Python script presents a thorough solution that prioritizes validation mechanisms, prominently featuring the `checkPlan` function. It ensures a secure cleaning plan by marking visited square. The implementation dynamically adapts to diverse scenarios and problem types within grid-based environments. Efficient map exploration is facilitated by functions such as `find_mapElements`, which identifies empty squares and the agent's starting position. The code also encompasses cardinal movement functions and a dynamic sequence generator in the `findPlan` function, guiding the agent through all empty squares. In conclusion, this repository provides a robust and adaptable solution for the Wumpus World problem, making it a valuable tool for grid-based environment navigation and cleaning.
 
 Key features of this script include functions to simulate cardinal movements (North, South, East, West), identify the location of empty squares, and validate the proposed plan's efficacy. The script meticulously documents the results, generating insightful reports on the plan's success or pinpointing any squares that may have been overlooked.
 
@@ -28,9 +28,14 @@ Key features of this script include functions to simulate cardinal movements (No
 
 - **Plan Validation:** The script checks whether a proposed plan effectively cleans the entire area, considering the starting position of the agent. It produces a detailed report of the plan's validity.
 
-- **File Output:** The script generates solution files that document the outcome of the plan, indicating whether it is successful or identifying any potentially missed squares.
-
 - **Automation:** It can process multiple problem files within a specified directory, automating the solution generation for a batch of Wumpus World scenarios.
+
+- **Dynamic Path Generation:** It dynamically generates sequences of directions in the findPlan function, guiding the agent through all empty squares in the grid.
+
+- **Versatility:** The code adapts to different scenarios and problem types within grid-based environments, offering versatility in addressing challenges related to grid traversal and hazards like the Wumpus.
+
+- **File Output:** The script generates solution files that document the outcome of the plan, indicating whether it is successful or identifying any potentially missed squares or the be sequence to traverse the empty squares.
+
 
 ## Setup
 ### This repository contains:
@@ -226,6 +231,56 @@ return unique_list
 finalList = checkPlanNoS(emptySquares.copy())
 write_solution_without_S(finalList)
 ```
+
+### **■ get_direction(current, next_pos):**
+- This function determines the cardinal direction (N, S, E, W) to move from the current position to the next position for the find plan function.
+- Takes as parameters: 
+   - current: Tuple representing the current position (x, y).
+   - next_pos: Tuple representing the next position (x, y).
+- And returns a string representing the cardinal direction needed to move from the current position to the next position.
+ 
+
+### **■ is_valid_move_dfs(maze, x, y, visited):**
+- Checks whether a move to the specified coordinates (x, y) in the maze is valid during the depth-first search (DFS) traversal.
+- Takes as parameters:
+    - maze: 2D list representing the grid-based environment.
+    - x: X-coordinate of the move.
+    - y: Y-coordinate of the move.
+    - visited: Set containing previously visited positions.
+- And returns **True** if the move is valid (within the maze boundaries and not blocked by an obstacle), **False** otherwise.   
+
+### **■ dfs(maze, current_position, goal, visited, path):**
+- Performs depth-first search (DFS) to find a path from the current position to the goal position in the maze.
+- Takes as parameters:
+    - maze: 2D list representing the grid-based environment.
+    - current_position: Tuple representing the current position (x, y).
+    - goal: Tuple representing the goal position (x, y).
+    - visited: Set containing previously visited positions.
+    - path: List to store the path from the current position to the goal.
+- And returns **True**  if a path is found, **False** otherwise.  
+
+### **■ finPlan(maze, emptySquares, start):**
+- Finds a plan for an agent to traverse all empty squares in the grid using depth-first search (DFS).
+- Utilizes the DFS algorithm to find a path from the starting position to each empty square.
+- Accumulates the path coordinates and updates the starting position for subsequent goals.
+- Writes the final plan to the solution file.
+- Takes as parameters:
+    - maze: 2D list representing the grid-based environment.
+    - emptySquares: List of tuples representing the coordinates of empty squares.
+    - start: Tuple representing the starting position of the agent.
+
+### **■ findPlanNoS(maze, emptySquares):**
+- Finds a plan for an agent to traverse all empty squares in the grid without a specified starting position.
+- Takes as parameters:
+    - maze: 2D list representing the grid-based environment.
+    - emptySquares: List of tuples representing the coordinates of empty squares.
+- And returns a string representing the concatenated plan for traversing all empty squares.  
+
+### **■ find_solution(plan):**
+- Writes the final plan to the solution file.
+- Opens the solution file and writes the plan.
+- If no plan is found, writes "NO PLAN FOUND" to the file.
+
 
 ## Self Evaluation and Design Decisions
 - **Directional Movement Functions:** Functions like goNorth, goSouth, goWest, and goEast facilitate movement within the grid by adjusting coordinates based on cardinal directions.
