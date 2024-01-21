@@ -33,9 +33,9 @@ Key features of this script include functions to simulate cardinal movements (No
 - **Dynamic Path Generation:** It dynamically generates sequences of directions in the findPlan function, guiding the agent through all empty squares in the grid.
 
 - **Recursion:**
-       - The DFS algorithm uses recursion to explore neighboring positions until the goal is reached.
-       - Each recursive call represents a move to a neighboring position, updating the current_position and path accordingly.
-       - Backtracking occurs if a dead-end is reached, ensuring exploration of alternative paths.
+  - The DFS algorithm uses recursion to explore neighboring positions until the goal is reached.
+  - Each recursive call represents a move to a neighboring position, updating the current_position and path accordingly.
+  - Backtracking occurs if a dead-end is reached, ensuring exploration of alternative paths.
 
 - **Versatility:** The code adapts to different scenarios and problem types within grid-based environments, offering versatility in addressing challenges related to grid traversal and hazards like the Wumpus.
 
