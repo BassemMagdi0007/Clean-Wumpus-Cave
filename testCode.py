@@ -7,6 +7,7 @@ directory = os.fsencode(workingFolder)
 
 # Direction with wrap around handling
 def goNorth(agent):
+    #print("Go North")
     if agent[0] == 0: 
         agent[0] = 11
     else: 
@@ -15,6 +16,7 @@ def goNorth(agent):
     return agent 
 
 def goSouth(agent): 
+    #print("Go South")
     if agent[0] == 11: 
         agent[0] = 0
     else: 
@@ -23,6 +25,7 @@ def goSouth(agent):
     return agent 
 
 def goWest(agent):
+    #print("Go west")
     if agent[1] == 0: 
         agent[1] = 17
     else: 
@@ -31,6 +34,7 @@ def goWest(agent):
     return agent 
 
 def goEast(agent):
+    #print("Go East")
     if agent[1] == 17: 
         agent[1] = 0
     else: 
@@ -48,6 +52,8 @@ def find_mapElements(_map):
     #find the empty squares and the agent locations
     for row_index, row in enumerate (_map):
         for col_index, element in enumerate (row):
+            #print(element, end=' ')
+            #print()
             if element == ' ':       
                 indices.append((row_index, col_index))
             elif element == 'S': 
@@ -55,6 +61,7 @@ def find_mapElements(_map):
                 agent.append(col_index)
 
     indices.append(tuple(agent))
+    #print(indices)
     return (indices, agent)
 
 #_______________________CHECK PLAN_______________________ 
@@ -93,15 +100,23 @@ def write_solution_with_S(myDict):
     for item in myDict:
         if myDict[item] == 'open':   
             valid = 0        
+            print("NOT VALID")  
+            print("NOT VALID")  
             break
 
     with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
         if(valid):    
+            print("GOOD PLAN")
+            print(" VALID")  
             f.write('GOOD PLAN')
         else:
+            print("BAD PLAN")
             f.write("BAD PLAN\n")
+            #print('\n', myDict, '\n')
             for item in myDict:
+                # print missed squares 
                 if myDict[item] == 'open':          
+                    print(item[1],", ", item[0]) 
                     f.write(str(item[1]) + ", " + str(item[0]) + '\n')
 
     f.close()
@@ -115,6 +130,7 @@ def checkPlanNoS(emptySquares):
         dictNoS = checkPlan(emptySquares[:-1], agent)
         
         for item in dictNoS:
+        # print missed squares 
             if dictNoS[item] == 'open': 
                 openElements.append(item)
 
@@ -129,11 +145,15 @@ def write_solution_without_S(openElements):
 
     with open('mySolutions/solution_' + X + '_' + YZ, 'w') as f:
         if(not openElements):    
+            #print("GOOD PLAN")
             f.write('GOOD PLAN')
         else:
+            #print("BAD PLAN")
             f.write("BAD PLAN\n")
 
             for item in openElements:
+                # print missed squares 
+                print(item[1],", ", item[0]) 
                 f.write(str(item[1]) + ", " + str(item[0]) + '\n')
 
 #_______________________FIND PLAN________________________  
@@ -177,13 +197,17 @@ def dfs(maze, current_position, goal, visited, path):
 
     visited.add(current_position)
     
+    #for neighbor in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
     for neighbor in [tuple(goSouth(list(current_position))),tuple(goNorth(list(current_position))), tuple(goWest(list(current_position))), tuple(goEast(list(current_position)))]:
         if is_valid_move_dfs(maze, *neighbor, visited):
+           # print("")
+           # print("Agent: " ,current_position, "neighbor: ", neighbor )
             if dfs(maze, neighbor, goal, visited, path):
                 path.append(current_position)
                 return True
-            
+
     # If all neighbors are visited or walls, backtrack
+    #visited.remove(current_position)
     return False
 
 #________________________________________________________
@@ -196,17 +220,24 @@ def finPlan(maze, emptySquares, start):
 
     for goal in emptySquares:
         if not dfs(maze, start, goal, visited_set, path):
+            print("No path found to goal at", goal)
             return
 
         path_coordinates = [get_direction(path[i], path[i + 1]) for i in range(len(path) - 1)]
+        print(path_coordinates)
         if path_coordinates != None:
             path_coordinates_str = ''.join(path_coordinates[::-1])
+        
+        print("\nPath found to goal at", goal, "as coordinates:", path_coordinates_str)
+        print("Path found to goal at", goal, "as coordinates (full):", path[::-1])
 
         # Update start_position to the reached goal
         start = goal
 
         # Accumulate path coordinates
         all_paths_coordinates.append(path_coordinates_str)
+        # Print all concatenated path coordinates at the end
+        print("\nAll paths coordinates:", ''.join(all_paths_coordinates))
         find_solution(''.join(all_paths_coordinates))
         # Clear visited set and path for the next iteration
         visited_set.clear()
@@ -227,6 +258,9 @@ def findPlanNoS(maze, emptySquares):
     all_paths_coordinates = []
     for start_position in emptySquares[:-1]:
         finPlan(maze, emptySquares[:-1], start_position)
+
+    # Print all concatenated path coordinates at the end
+    print("\nAll paths coordinates:", ''.join(all_paths_coordinates))
     return ''.join(all_paths_coordinates)
 
 #_________________________MAIN____________________________        
@@ -238,8 +272,12 @@ for file in os.listdir(directory):
     X = l[1]
     YZ = l[2]
 
-
+    #if X == 'f' and YZ == '00.txt':
+    #if X == 'f':
     if X in ['a', 'b', 'c', 'd', 'e', 'f']: #ALL EXAMPLE PROBLEMS
+    #if X in ['a', 'b', 'c']: #CHECK PLAN
+    #if X in ['d', 'e']: #FIND PLAN
+        
         with open(workingFolder + '\\' + filename, 'r') as file2:
 
             line = file2.readlines()
@@ -250,6 +288,7 @@ for file in os.listdir(directory):
             # Check for type of problem 
             # CHECK PLAN
             if problemType == "CHECK PLAN": 
+                #print("CHECK")
                 # Extract the second line (solution of the problem)
                 proposedAns = _map[1]
                 # Extract the rest (the cave)
@@ -268,7 +307,9 @@ for file in os.listdir(directory):
 
         # FIND PLAN       
         if problemType == "FIND PLAN":
+            #print("FIND")
             cave = _map[1:]
+            print("sample_maze: ", cave)
             emptySquares , agent = find_mapElements(cave)
             start_position = tuple(agent)
 
@@ -276,7 +317,21 @@ for file in os.listdir(directory):
             # With Agent
             if start_position:
                 findAgentFinal = finPlan(cave, emptySquares, start_position)
+                #print("solution: ",solution )
+                if findAgentFinal:
+                    print("\nPath found:", findAgentFinal)
+                else:
+                    print("\nNo path found.")
             
             # Without Agent
             else:
                 findFinal = findPlanNoS(cave, emptySquares)
+                #print("solution: ",solution )
+                if findFinal:
+                    print("\nPath found:", findFinal)
+                else:
+                    print("\nNo path found.")
+
+                
+
+                
