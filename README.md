@@ -32,6 +32,11 @@ Key features of this script include functions to simulate cardinal movements (No
 
 - **Dynamic Path Generation:** It dynamically generates sequences of directions in the findPlan function, guiding the agent through all empty squares in the grid.
 
+- **Recursion:**
+       - The DFS algorithm uses recursion to explore neighboring positions until the goal is reached.
+       - Each recursive call represents a move to a neighboring position, updating the current_position and path accordingly.
+       - Backtracking occurs if a dead-end is reached, ensuring exploration of alternative paths.
+
 - **Versatility:** The code adapts to different scenarios and problem types within grid-based environments, offering versatility in addressing challenges related to grid traversal and hazards like the Wumpus.
 
 - **File Output:** The script generates solution files that document the outcome of the plan, indicating whether it is successful or identifying any potentially missed squares or the be sequence to traverse the empty squares.
@@ -241,7 +246,12 @@ write_solution_without_S(finalList)
  
 
 ### **■ is_valid_move_dfs(maze, x, y, visited):**
-- Checks whether a move to the specified coordinates (x, y) in the maze is valid during the depth-first search (DFS) traversal.
+```python
+def is_valid_move_dfs(maze, x, y, visited):
+    # Check if the move is valid (within grid boundaries, not a wall, and not visited)
+    ...
+```
+- Checks whether a move to coordinates (x, y) is valid within the grid boundaries, not a wall ('X'), and not already visited.
 - Takes as parameters:
     - maze: 2D list representing the grid-based environment.
     - x: X-coordinate of the move.
@@ -250,7 +260,14 @@ write_solution_without_S(finalList)
 - And returns **True** if the move is valid (within the maze boundaries and not blocked by an obstacle), **False** otherwise.   
 
 ### **■ dfs(maze, current_position, goal, visited, path):**
-- Performs depth-first search (DFS) to find a path from the current position to the goal position in the maze.
+```python
+def dfs(maze, current_position, goal, visited, path):
+    # Depth-First Search to find a path from current_position to the goal
+    ...
+```
+- Utilizes Depth-First Search (DFS) to find a path from the current position to the goal position in the maze.
+- Recursively explores neighboring positions, backtracking if necessary.
+- Updates the 'path' list with the coordinates of the discovered path.
 - Takes as parameters:
     - maze: 2D list representing the grid-based environment.
     - current_position: Tuple representing the current position (x, y).
@@ -260,9 +277,15 @@ write_solution_without_S(finalList)
 - And returns **True**  if a path is found, **False** otherwise.  
 
 ### **■ finPlan(maze, emptySquares, start):**
-- Finds a plan for an agent to traverse all empty squares in the grid using depth-first search (DFS).
+```python
+def finPlan(maze, emptySquares, start):
+    # Find a plan for traversing all empty squares from a given start position
+    ...
+```
+- 
+- Finds a plan for an agent to traverse all empty squares in the grid using depth-first search (DFS) given start position..
 - Utilizes the DFS algorithm to find a path from the starting position to each empty square.
-- Accumulates the path coordinates and updates the starting position for subsequent goals.
+- Accumulates the path coordinates and updates the starting position for subsequent goals/iterations.
 - Writes the final plan to the solution file.
 - Takes as parameters:
     - maze: 2D list representing the grid-based environment.
@@ -270,13 +293,24 @@ write_solution_without_S(finalList)
     - start: Tuple representing the starting position of the agent.
 
 ### **■ findPlanNoS(maze, emptySquares):**
+```python
+def findPlanNoS(maze, emptySquares):
+    # Find a plan for traversing all empty squares without a specified start position
+    ...
+```
 - Finds a plan for an agent to traverse all empty squares in the grid without a specified starting position.
+- Calls the finPlan function for each potential start position in emptySquares[:-1].
 - Takes as parameters:
     - maze: 2D list representing the grid-based environment.
     - emptySquares: List of tuples representing the coordinates of empty squares.
 - And returns a string representing the concatenated plan for traversing all empty squares.  
 
 ### **■ find_solution(plan):**
+```python
+def find_solution(plan):
+    # Write the found plan to a solution file
+    ...
+```
 - Writes the final plan to the solution file.
 - Opens the solution file and writes the plan.
 - If no plan is found, writes "NO PLAN FOUND" to the file.
