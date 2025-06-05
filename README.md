@@ -1,4 +1,4 @@
-# Assignment 1.0: Wumpus-Cave Variant A
+# Clean-Wumpus-Cave
 
 This repository contains a Python implementation that serves as a solver for the Wumpus World problem, involving a grid-based environment where an agent (vacuum cleaner) needs to navigate, following a sequence of instructions, to clean the entire area or generate a sequence of directions to clean the entire erea. The code provides a detailed solution, including tracking the agent's movement and validating the cleaning plan.
 
